@@ -1,0 +1,14 @@
+<aura:component description="TA_AccountTile">
+    <aura:attribute type="Account" name="account" required="true"/>
+    <aura:attribute type="Boolean" name="isSelected" default="false" access="public"/>
+    <aura:registerEvent name="TA_EventPassAccountToMap" type="c:TA_EventPassAccountToMap"/>
+    <aura:registerEvent name="TA_EventSelectedRow" type="c:TA_EventSelectedRow"/>
+<!--    <lightning:button onclick="{!c.onPassAccountToMap}" class="myButton">-->
+<!--        <p >{!v.account.Name}</p>-->
+        <tr onclick="{!c.onPassAccountToMap}" class="{!if(v.isSelected, 'szare', '')}">
+            <td>{!v.account.Name} {!v.isSelected}</td>
+            <td>{!v.account.Name}</td>
+            <td>{!v.account.Name}</td>
+        </tr>
+<!--    </lightning:button>-->
+</aura:component>

@@ -1,0 +1,12 @@
+.THIS {
+}
+.THIS.myButton{
+    width:100%;
+    border-radius:0;
+    margin-bottom:2px;
+    border-left: 0;
+    border-right: 0;
+}
+.THIS.szare{
+    background-color:grey;
+}

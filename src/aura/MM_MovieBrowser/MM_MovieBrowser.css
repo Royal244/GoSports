@@ -1,0 +1,29 @@
+.THIS {
+}
+.THIS .buttons{
+    width:80%;
+
+}
+.THIS .buttonGroup{
+    text-align:center;
+    margin-bottom:25px;
+    margin-top:10px;
+}
+
+.THIS.searchInput{
+    text-align:center;
+}
+.THIS .slds-form-element__label:empty{
+    display:none;
+}
+.THIS .fieldButtons{
+    text-align:left;
+}
+.THIS .searchButton{
+     margin-left:5px;
+}
+
+.THIS .pagination{
+    margin-top:15px;
+    text-align:center;
+}

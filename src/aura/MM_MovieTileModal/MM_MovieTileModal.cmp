@@ -1,0 +1,123 @@
+<aura:component description="MM_MovieTileModal" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global" controller="MM_ApiServiceTheMovieDB">
+    <aura:attribute name="movieDetails" type="Object" access="public"/>
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="movieUrl" type="String" default="{!null}"/>
+    <aura:attribute name="isInFavorite" type="Boolean" default="{!true}"/>
+    <aura:attribute name="castDetailsList" type="MM_GetCastCalloutResponse.cls_cast[]" access="public"/>
+    <aura:handler event="c:MM_SendMovieDetailsEvent" action="{!c.openModal}"/>
+    <!--    <aura:registerEvent type="c:MM_SendActorDetailsEvent" name="MM_SendActorDetailsEvent"/>-->
+    <aura:handler event="c:MM_SendActorDetailsEvent" action="{!c.close}"/>
+    <!--    <aura:handler name="init" action="{!c.onInit}" value="{!this}"/>-->
+
+    <aura:if isTrue="{!v.isModalOpen}">
+
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+            <div class="slds-modal__container">
+                <!--                <aura:if isTrue="{!v.movieUrl != null}">-->
+
+                <!--                    &lt;!&ndash; Modal/Popup Box Header Starts here&ndash;&gt;-->
+                <!--                    <header class="slds-modal__header headerHeader">-->
+                <!--                        <lightning:buttonIcon iconName="utility:close"-->
+                <!--                                              onclick="{! c.closeModel }"-->
+                <!--                                              alternativeText="close"-->
+                <!--                                              variant="bare-inverse"-->
+                <!--                                              class="slds-modal__close"/>-->
+                <!--                        &lt;!&ndash;                    <iframe width="100%" height="320" src="https://www.youtube.com/embed/F9a9FJtqx_o" frameborder="0" class="inFrame"></iframe>&ndash;&gt;-->
+                <!--                        <iframe width="100%" height="320" src="{!'https://www.youtube.com/embed/' + v.movieUrl}"-->
+                <!--                                frameborder="0" class="inFrame"></iframe>-->
+                <!--                    </header>-->
+                <!--                </aura:if>-->
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.movieUrl != null}">
+
+                        <!-- Modal/Popup Box Header Starts here-->
+                        <!--                        <header class="slds-modal__header headerHeader">-->
+                        <!--                            <lightning:buttonIcon iconName="utility:close"-->
+                        <!--                                                  onclick="&lt;!&ndash;{! c.closeModel }&ndash;&gt;"-->
+                        <!--                                                  alternativeText="close"-->
+                        <!--                                                  variant="bare-inverse"-->
+                        <!--                                                  class="slds-modal__close"/>-->
+                        <!--                    <iframe width="100%" height="320" src="https://www.youtube.com/embed/F9a9FJtqx_o" frameborder="0" class="inFrame"></iframe>-->
+                        <!--                        <iframe width="560" height="315" src="https://www.youtube.com/embed/6Lp6au-Hti0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+                        <iframe width="100%" height="320" src="{!'https://www.youtube.com/embed/' + v.movieUrl}"
+                                frameborder="0" class="inFrame" allow="fullscreen"></iframe>
+                        <!--                        </header>-->
+                    </aura:if>
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem size="3">
+                            <div style="text-align:center">
+                                <img src="{!'https://www.themoviedb.org/t/p/w220_and_h330_face' + v.movieDetails.poster_path}"/>
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="9">
+                            <p class="movieTitle"><b>{!v.movieDetails.title}</b></p>
+                            <p style="font-size:20px; margin-bottom:5px;">Overview</p>
+                            <p style="margin-bottom:10px;">{!v.movieDetails.overview}</p>
+                            <p style="margin-bottom:10px;">Release date: {!v.movieDetails.release_date}</p>
+                            <aura:if isTrue="{!not(v.movieDetails.favorite)}">
+                                <lightning:button variant="brand" label="Add to favorite"
+                                                  onclick="{!c.onAddToFavorites}"/>
+                            </aura:if>
+                            <aura:if isTrue="{!not(v.movieDetails.blackListed)}">
+                                <lightning:button variant="destructive" label="Add to black list"
+                                                  onclick="{!c.onAddToBlackList}"/>
+                            </aura:if>
+                        </lightning:layoutItem>
+                        <!--                        <lightning:layoutItem size="12">-->
+                        <!--                            <p class="movieTitle"><b>Casts</b></p>-->
+                        <!--                        </lightning:layoutItem>-->
+                        <!--                        <aura:iteration items="{!v.castDetailsList}" var="actor">-->
+                        <!--                            <lightning:layoutItem size="3" class="tileClass">-->
+                        <!--                                <c:MM_ActorTile actorDetails="{!actor}"/>-->
+                        <!--                            </lightning:layoutItem>-->
+                        <!--                        </aura:iteration>-->
+
+                    </lightning:layout>
+
+                    <lightning:tabset class="slds-card">
+                        <lightning:tab label="Cast">
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12">
+                                    <p class="movieTitle"><b>Cast</b></p>
+                                </lightning:layoutItem>
+                                <aura:iteration items="{!v.castDetailsList}" var="actor">
+                                    <lightning:layoutItem size="3" class="tileClass">
+                                        <c:MM_ActorTile actorDetails="{!actor}"/>
+                                    </lightning:layoutItem>
+                                </aura:iteration>
+                            </lightning:layout>
+                        </lightning:tab>
+                        <lightning:tab label="Reviews" >
+                            <c:MM_MovieReviews movie="{!v.movieDetails}"/>
+                        </lightning:tab>
+                        <lightning:tab label="Add review">
+                            <p>Add review</p>
+                            <!--                            <c:MM_FiveStarRating/>-->
+                            <c:MM_AddMovieReview movie="{!v.movieDetails}"/>
+                        </lightning:tab>
+                    </lightning:tabset>
+
+                </div>
+                <!--Modal/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <div style="text-align:center; margin-right: 20px;">
+                        <lightning:button variant="neutral"
+                                          label="Close"
+                                          title="Close"
+                                          onclick="{! c.closeModel }"/>
+                    </div>
+
+                    <!--                    <lightning:button variant="brand"-->
+                    <!--                                      label="OK"-->
+                    <!--                                      title="OK"-->
+                    <!--                                      onclick="{!c.submitDetails}"/>-->
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

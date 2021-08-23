@@ -1,0 +1,10 @@
+<apex:page id="HM_DoctorsListToXls" controller="HM_DoctorController" readOnly="true" contentType="application/vnd.ms-excel#Doctors.xls" cache="true">
+    <apex:pageBlock>
+        <apex:pageBlockTable value="{!doctorsListToExport}" var="doctor">
+            <apex:column headerValue="Name" value="{!doctor.Name}"/>
+            <apex:column headerValue="Last Name" value="{!doctor.Last_Name__c}"/>
+            <apex:column headerValue="E-mail" value="{!doctor.E_mail_Adress__c}"/>
+            <apex:column headerValue="Country" value="{!doctor.Country__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,357 @@
+<apex:page standardcontroller="Survey__c" title="Survey" extensions="ViewSurveyController" cache="false" sidebar="false"
+           showheader="false" lightningStylesheets="true" docType="html-5.0">
+    <apex:includeScript value="{!$Resource.SurveyForce + '/SurveyForce_jquery.js'}"/>
+    <apex:includeScript value="{!$Resource.SurveyForce + '/surveyforce.js'}"/>
+    <!--<apex:stylesheet value="{!$Resource.SurveyForce + '/surveyforce.css'}"/>-->
+    <apex:slds/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1"/>
+    <script>
+		$(document).ready(function () {
+		});
+    </script>
+    <style>
+        <apex:outputText value="{!HTMLENCODE(Survey__c.Survey_Container_CSS__c)}" escape="false"/>
+    </style>
+
+    <div style="display:{!displaySurvey};">
+        <div id="survey_container" class="slds-scope">
+            <apex:form id="theForm">
+                <apex:outputPanel id="seeSurvey" rendered="{!Survey__c.Hide_Survey_Name__c == false}">
+                    <div class="slds-box slds-theme_shade">
+                        <div class="slds-text-heading_large">
+                            <apex:outputField value="{!Survey__c.Survey_Header__c}"/>
+                        </div>
+                        <apex:outputPanel rendered="{!Survey__c.Hide_Survey_Name__c == false}">
+                            <div class="slds-text-heading_medium">{!Survey__c.Name}</div>
+                        </apex:outputPanel>
+                    </div>
+                </apex:outputPanel>
+
+                <apex:pageMessages/>
+                <!-- <c:uiMessage severity="success" message="{!surveyThankYouText}" renderMe="{!thankYouRendered == true}" />
+			<c:viewSurveyThankYou message="{!surveyThankYouText}" renderMe="{!thankYouRendered == true}" /> -->
+
+                <apex:outputPanel rendered="{!thankYouRendered == false}">
+                    <div class="slds-form_stacked">
+                        <apex:repeat value="{!allQuestions}" var="surveyQuestion" id="aQPreview">
+                            <div class="slds-box slds-theme_default">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">
+                                        <apex:outputText value="{!surveyQuestion.orderNumber + ':'}"
+                                                         styleClass="slds-text-heading_small"/>
+                                        &nbsp;<apex:outputText escape="true" value="{!surveyQuestion.question}"
+                                                               styleClass="slds-text-body_regular"/>
+                                        &nbsp;<apex:outputText rendered="{!surveyQuestion.required}"
+                                                               value="({!$Label.LABS_SF_Required})"
+                                                               styleClass="slds-text-body_small slds-text-color_error"/>
+                                    </label>
+                                </div>
+                                <apex:outputPanel rendered="{!surveyQuestion.renderRadioVertical}">
+                                    <apex:selectRadio styleClass="convertToLDS" layout="pageDirection"
+                                                      rendered="{!surveyQuestion.renderRadioVertical}"
+                                                      value="{!surveyQuestion.selectedOption}">
+                                        <apex:selectOptions value="{!surveyQuestion.responseOptions}"/>
+                                    </apex:selectRadio>
+                                </apex:outputPanel>
+
+                                <apex:outputPanel rendered="{!surveyQuestion.renderMultiCheckboxes}">
+                                    <apex:selectCheckboxes styleClass="convertToLDS" layout="pageDirection"
+                                                           rendered="{!surveyQuestion.renderMultiCheckboxes}"
+                                                           value="{!surveyQuestion.selectedOptions}">
+                                        <apex:selectOptions value="{!surveyQuestion.responseOptions}"/>
+                                    </apex:selectCheckboxes>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!surveyQuestion.renderFreeText}">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <apex:inputTextArea styleClass="slds-textarea" cols=""
+                                                                rows="{!surveyQuestion.noOfRowsForTextArea}"
+                                                                rendered="{!surveyQuestion.renderFreeText}"
+                                                                value="{!surveyQuestion.inputText}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!surveyQuestion.renderRadioHorizontal}">
+                                    <apex:selectRadio styleClass="convertToLDS"
+                                                      rendered="{!surveyQuestion.renderRadioHorizontal}"
+                                                      value="{!surveyQuestion.selectedOption}">
+                                        <apex:selectOptions value="{!surveyQuestion.responseOptions}"/>
+                                    </apex:selectRadio>
+                                </apex:outputPanel>
+                            </div>
+                        </apex:repeat>
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!thankYouRendered == false}">
+                    <div class="slds-box slds-theme_default">
+                        <apex:outputPanel rendered="{!isInternal && !Survey__c.All_Responses_Anonymous__c}">
+                            <span class="slds-text-body_regular">{!$Label.LABS_SF_Answer_as}:</span>
+                            <apex:selectRadio value="{!anonymousAnswer}">
+                                <apex:selectOptions value="{!anonymousOrUser}"/>
+                            </apex:selectRadio>
+                            <br/>
+                        </apex:outputPanel>
+                        <apex:actionStatus id="submitStatus">
+                            <apex:facet name="stop">
+                                <apex:commandButton status="submitStatus" styleClass="slds-button slds-button_brand"
+                                                    action="{!submitResults}" value="{!$Label.LABS_SF_SubmitSurvey}"
+                                                    disabled="{!$CurrentPage.parameters.preview = 'true'}"/>
+                            </apex:facet>
+                            <apex:facet name="start">
+                                <apex:commandButton value="{!$Label.LABS_SF_SubmitSurvey}" disabled="true"
+                                                    status="submitStatus"/>
+                            </apex:facet>
+                        </apex:actionStatus>
+                    </div>
+                </apex:outputPanel>
+            </apex:form>
+        </div>
+        <div id="confirmation_container" class="slds-scope">
+            <apex:outputPanel rendered="{!thankYouRendered == true}" id="thankYouPanel">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 id="modal-heading-01"
+                                class="slds-modal__title slds-hyphenate slds-text-title_caps">{!$Label.LABS_SF_ThankYou}</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <apex:outputText escape="false" value="{!Survey__c.Thank_You_Text__c}"/>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </apex:outputPanel>
+        </div>
+        <apex:outputField rendered="false" value="{!Survey__c.Thank_You_Text__c}"/>
+        <apex:outputField rendered="false" value="{!Survey__c.Thank_You_Link__c}"/>
+        <apex:outputField rendered="false" value="{!Survey__c.All_Responses_Anonymous__c}"/>
+    </div>
+
+    <div style="display:{!displayForm}">
+        <!--        <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8"/>-->
+        <!--        <apex:form>-->
+        <!--            <input disabled="true" hidden="true" name="oid" value="00D09000007mIMA"/>-->
+        <!--            <input disabled="true" hidden="true" name="retURL" value="http://"/>-->
+        <!--            <label for="first_name">First Name</label><input id="first_name" maxlength="40" name="first_name" size="20"-->
+        <!--                                                             type="text"/><br/>-->
+        <!--            <label for="last_name">Last Name</label><input id="last_name" maxlength="80" name="last_name" size="20"-->
+        <!--                                                           type="text"/><br/>-->
+        <!--            <label for="email">Email</label><input id="email" maxlength="80" name="email" size="20" type="text"/><br/>-->
+        <!--            <label for="company">Company</label><input id="company" maxlength="40" name="company" size="20"-->
+        <!--                                                       type="text"/><br/>-->
+        <!--            <label for="city">City</label><input id="city" maxlength="40" name="city" size="20" type="text"/><br/>-->
+
+        <!--            <label for="state">State/Province</label><input id="state" maxlength="20" name="state" size="20"-->
+        <!--                                                            type="text"/><br/>-->
+
+        <!--            &lt;!&ndash;            <input type="button" name="submit" onclick="{!createLead}"/>&ndash;&gt;-->
+        <!--            <apex:commandButton action="{!createLead}" value="123"/>-->
+        <!--            &lt;!&ndash;        </form>&ndash;&gt;-->
+        <!--        </apex:form>-->
+        <!--  ----------------------------------------------------------------------  -->
+        <!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
+        <!--  If necessary, please modify the charset parameter to specify the        -->
+        <!--  character set of your HTML page.                                        -->
+        <!--  ----------------------------------------------------------------------  -->
+
+        <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8"/>
+
+        <!--  ----------------------------------------------------------------------  -->
+        <!--  NOTE: Please add the following <FORM> element to your page.             -->
+        <!--  ----------------------------------------------------------------------  -->
+        <style>
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(45deg, greenyellow, dodgerblue);
+}
+.center {
+  position: relative;
+  padding: 50px 50px;
+  background: #fff;
+  border-radius: 10px;
+}
+.center h1 {
+  font-size: 2em;
+  border-left: 5px solid dodgerblue;
+  padding: 10px;
+  color: #000;
+  letter-spacing: 5px;
+  margin-bottom: 60px;
+  font-weight: bold;
+  padding-left: 10px;
+}
+.center .inputbox {
+  position: relative;
+  width: 300px;
+  height: 50px;
+  margin-bottom: 20px;
+}
+.center .inputbox input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border: 2px solid #000;
+  outline: none;
+  background: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 1.2em;
+}
+.center .inputbox:last-child {
+  margin-bottom: 0;
+}
+.center .inputbox span {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  font-size: 1em;
+  transition: 0.6s;
+  font-family: sans-serif;
+}
+.center .inputbox input:focus ~ span,
+.center .inputbox input:valid ~ span {
+  transform: translateX(-13px) translateY(-35px);
+  font-size: 1em;
+}
+.center .inputbox [type="submit"] {
+  width: 50%;
+  background: dodgerblue;
+  color: #fff;
+  border: #fff;
+}
+.center .inputbox:hover [type="submit"] {
+  background: linear-gradient(45deg, greenyellow, dodgerblue);
+}
+
+
+
+
+
+        </style>
+        <div class="center">
+            <h1>Create Lead</h1>
+            <form action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8" method="POST">
+
+                <input style="display:none;" name="oid" value="00D09000007mIMA"/>
+                <input style="display:none;" name="retURL"
+                       value="https://generate-random-doctor-developer-edition.eu40.force.com/?id=a0A09000003CHUgEAO&withFormDisplay=3"/>
+
+                <!--  ----------------------------------------------------------------------  -->
+                <!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
+                <!--  these lines if you wish to test in debug mode.                          -->
+                <!--  <input type="hidden" name="debug" value=1>                              -->
+                <!--  <input type="hidden" name="debugEmail"                                  -->
+                <!--  value="daniel.siemienczuk@britenet.com.pl">                             -->
+                <!--  ----------------------------------------------------------------------  -->
+                <div class="inputbox">
+                    <input id="first_name" maxlength="40" name="first_name"
+                                                                     size="20" type="text"/><span>First Name</span><br/>
+                </div>
+
+                <div class="inputbox">
+                    <input id="last_name" maxlength="80" name="last_name"
+                                                                   size="20"
+                                                                   type="text"/><span>Last Name</span><br/>
+                </div>
+
+                <div class="inputbox">
+                    <input id="email" maxlength="80" name="email" size="20"
+                                                           type="text"/><span>Email</span><br/>
+                </div>
+                <div class="inputbox">
+                    <input id="company" maxlength="40" name="company" size="20"
+                                                               type="text"/><span>Company</span><br/>
+                </div>
+                <div class="inputbox">
+                    <input id="city" maxlength="40" name="city" size="20"
+                                                         type="text"/><span>City</span><br/>
+                </div>
+                <div class="inputbox">
+                    <input id="state" maxlength="20" name="state" size="20"
+                                                                    type="text"/><span>State/Province</span><br/>
+                </div>
+                <div class="inputbox">
+                    <input type="submit" name="submit"/>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+
+    <div style="display:{!displayThankYou}">
+        <h1>Thank you!</h1>
+    </div>
+
+    <style type='text/css'>
+	.embeddedServiceHelpButton .helpButton .uiButton {
+		background-color: #005290;
+		font-family: "Arial", sans-serif;
+	}
+	.embeddedServiceHelpButton .helpButton .uiButton:focus {
+		outline: 1px solid #005290;
+	}
+</style>
+
+    <script type='text/javascript' src='https://service.force.com/embeddedservice/5.0/esw.min.js'></script>
+    <script type='text/javascript'>
+	var initESW = function(gslbBaseURL) {
+		embedded_svc.settings.displayHelpButton = true; //Or false
+		embedded_svc.settings.language = ''; //For example, enter 'en' or 'en-US'
+
+		//embedded_svc.settings.defaultMinimizedText = '...'; //(Defaults to Chat with an Expert)
+		//embedded_svc.settings.disabledMinimizedText = '...'; //(Defaults to Agent Offline)
+
+		//embedded_svc.settings.loadingText = ''; //(Defaults to Loading)
+		//embedded_svc.settings.storageDomain = 'yourdomain.com'; //(Sets the domain for your deployment so that visitors can navigate subdomains during a chat session)
+
+		// Settings for Chat
+		//embedded_svc.settings.directToButtonRouting = function(prechatFormData) {
+			// Dynamically changes the button ID based on what the visitor enters in the pre-chat form.
+			// Returns a valid button ID.
+		//};
+		//embedded_svc.settings.prepopulatedPrechatFields = {}; //Sets the auto-population of pre-chat form fields
+		//embedded_svc.settings.fallbackRouting = []; //An array of button IDs, user IDs, or userId_buttonId
+		//embedded_svc.settings.offlineSupportMinimizedText = '...'; //(Defaults to Contact Us)
+
+		embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+		embedded_svc.settings.entryFeature = 'LiveAgent';
+
+		embedded_svc.init(
+			'https://britenet47-dev-ed.my.salesforce.com',
+			'https://generate-random-doctor-developer-edition.eu40.force.com',
+			gslbBaseURL,
+			'00D09000007mIMA',
+			'chat11',
+			{
+				baseLiveAgentContentURL: 'https://c.la3-c2-fra.salesforceliveagent.com/content',
+				deploymentId: '57209000000kjtM',
+				buttonId: '57309000000kkvJ',
+				baseLiveAgentURL: 'https://d.la3-c2-fra.salesforceliveagent.com/chat',
+				eswLiveAgentDevName: 'chat11',
+				isOfflineSupportEnabled: false
+			}
+		);
+	};
+
+	if (!window.embedded_svc) {
+		var s = document.createElement('script');
+		s.setAttribute('src', 'https://britenet47-dev-ed.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+		s.onload = function() {
+			initESW(null);
+		};
+		document.body.appendChild(s);
+	} else {
+		initESW('https://service.force.com');
+	}
+</script>
+</apex:page>

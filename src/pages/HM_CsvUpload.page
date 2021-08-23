@@ -1,0 +1,49 @@
+<apex:page id="HM_CsvUpload" controller="HM_CsvUploadController">
+    <apex:form>
+        <apex:pageBlock>
+            <apex:pageBlockSection columns="2">
+                <apex:outputPanel layout="inline">
+                    <apex:inputFile value="{!csvFileBody}" filename="{!csvAsString}" fileSize="{!fileSize}"/>
+                </apex:outputPanel>
+                <apex:outputPanel layout="inline">
+                    <apex:commandButton value="{!$Label.loadCsv}" action="{!importCSVFile}"/>
+                    <apex:commandButton value="{!$Label.clearButton}" action="{!clear}" disabled="{!isDisable}"/>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock>
+            <apex:pageblocktable value="{!listOfElements}" var="element">
+                <apex:column headerValue="{!$Label.selected}">
+                    <apex:inputCheckbox value="{!element.selected}"></apex:inputCheckbox>
+                </apex:column>
+                <apex:column headerValue="{!$Label.firstName}" value="{!element.doctor.name}"/>
+                <apex:column headerValue="{!$Label.lastName}" value="{!element.doctor.Last_Name__c}"/>
+                <apex:column headerValue="{!$Label.eMail}" value="{!element.doctor.E_mail_Adress__c}"/>
+                <apex:column headerValue="{!$Label.country}" value="{!element.doctor.Country__c}"/>
+                <apex:column headerValue="{!$Label.birthDay}" value="{!element.doctor.Date_of_birth__c }"/>
+                <apex:column headerValue="{!$Label.telephone}" value="{!element.doctor.Telephone_Number__c }"/>
+                <apex:column headerValue="{!$Label.city}" value="{!element.doctor.City__c }"/>
+                <apex:column headerValue="{!$Label.status}" >
+                    <apex:outputText value="{!element.status}"></apex:outputText>
+                    <apex:outputText rendered="{!element.viewLink}" >
+                        <a href="/{!element.id}" target="_blank">View</a>
+                    </apex:outputText>
+                </apex:column>
+            </apex:pageblocktable>
+            <apex:outputText value="{!$Label.tableInformationCsv}" style="margin-left:2px;" rendered="{!simpleTextUnderTable}"/>
+        </apex:pageBlock>
+        <apex:pageBlock>
+            <apex:pageBlockSection columns="2">
+                <apex:outputPanel layout="inline">
+                    <apex:commandButton value="{!$Label.buttonAll}" action="{!selectAll}" disabled="{!isDisable}"/>
+                    <apex:commandButton value="{!$Label.buttonNone}" action="{!noneSelect}" disabled="{!isDisable}"/>
+                    <apex:commandButton value="{!$Label.buttonReverse}" action="{!reverseSelect}" disabled="{!isDisable}"/>
+                </apex:outputPanel>
+                <apex:outputPanel layout="inline">
+                    <apex:commandButton value="{!$Label.buttonImport}" action="{!importSelectedDoctors}" disabled="{!isDisable}"/>
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pagemessages/>
+    </apex:form>
+</apex:page>

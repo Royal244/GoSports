@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="MM_SendMovieDetailsEvent">
+    <aura:attribute type="Object" name="detailsMovie" access="public" default="{!null}"/>
+</aura:event>

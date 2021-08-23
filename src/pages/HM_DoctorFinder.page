@@ -1,0 +1,55 @@
+<apex:page id="HM_DoctorFinder" docType="html-5.0" controller="HM_DoctorController">
+    <apex:form id = "form" >
+        <apex:pageBlock title="Find Doctor">
+            <apex:pageBlockSection columns="2" dir="LTR"  >
+                <apex:inputField value="{!doctor.Name}" />
+                <apex:inputField required="false" value="{!doctor.Last_Name__c}" />
+                <apex:inputField required="false" value="{!doctor.E_mail_Adress__c}"/>
+                <apex:inputField value="{!doctor.Country__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" dir="LTR">
+                <apex:pageBlockSectionItem>
+                    <apex:commandButton status="pageStatus" value="Search" action="{!searchDoctors}" reRender="form"/>
+                    <apex:commandButton value="Clear" action="{!clear}" reRender="form" disabled="{!hideButton}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem>
+                    <apex:commandButton value="Download CSV" action="{!CreateCSV}" disabled="{!hideButton}"/>
+                    <apex:commandButton value="Download XLS" action="{!CreateXLS}" disabled="{!hideButton}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="{!$Label.searchResult}" id="result">
+            <apex:actionFunction name="refreshPageSize" action="{!refreshPageSize}" status="pageStatus" reRender="result"/>
+            <apex:pageBlockTable value="{!doctors}" var="doctor">
+                <apex:column headerValue="Action"><a href="/{!doctor.Id}" target="_blank">View</a> | <a href="/{!doctor.Id}/e" target="_blank">Edit</a></apex:column>
+                <apex:column headerValue="First Name" value="{!doctor.name}"/>
+                <apex:column headerValue="Last Name" value="{!doctor.Last_Name__c}"/>
+                <apex:column headerValue="E-mail" value="{!doctor.E_mail_Adress__c}"/>
+                <apex:column headerValue="Country" value="{!doctor.Country__c}"/>
+            </apex:pageBlockTable>
+            <apex:panelGrid columns="8">
+                <apex:selectList value="{!size}" multiselect="false" size="1" onchange="refreshPageSize();" disabled="{!hideButton}">
+                    <apex:selectOptions value="{!paginationSizeOptions}"/>
+                </apex:selectList>
+                <apex:commandButton status="pageStatus" reRender="result" value="First" action="{!firstPage}" disabled="{!!setStandardController.hasPrevious}" title="First Page"/>
+                <apex:commandButton status="pageStatus" reRender="result" value="Previous" action="{!prevPage}" disabled="{!!setStandardController.hasPrevious}" title="Previous Page"/>
+                <apex:commandButton status="pageStatus" reRender="result" value="Next" action="{!nextPage}" disabled="{!!setStandardController.hasNext}" title="Next Page"/>
+                <apex:commandButton status="pageStatus" reRender="result" value="Last" action="{!lastPage}" disabled="{!!setStandardController.hasNext}" title="Last Page"/>
+            </apex:panelGrid>
+            <apex:pageMessages></apex:pageMessages>
+            <apex:actionStatus id="pageStatus">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                        <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+                            <img src="/img/loading.gif" style="float: left; margin: 8px;" />
+                            <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                        </div>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

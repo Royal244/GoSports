@@ -1,0 +1,14 @@
+<aura:component description="TA_Map" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global">
+    <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="zoomLevel" type="Integer" />
+    <aura:attribute name="center" type="Account"/>
+    <aura:handler event="c:TA_SearchResult" action="{!c.createPin}"/>
+    <aura:handler event="c:TA_EventPassAccountToMap" action="{!c.moveToPin}"/>
+
+    <!-- handlers-->
+<!--    <aura:handler name="init" value="{! this }" action="{! c.init }"/>-->
+
+    <!-- the map component -->
+        <lightning:map mapMarkers="{!v.mapMarkers}" zoomLevel="{!v.zoomLevel}" listView="hidden"/>
+</aura:component>

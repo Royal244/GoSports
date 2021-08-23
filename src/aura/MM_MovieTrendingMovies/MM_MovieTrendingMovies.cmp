@@ -1,0 +1,64 @@
+<aura:component description="MM_MovieTrendingMovies" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global" controller="MM_ApiServiceTheMovieDB">
+
+    <aura:attribute type="MM_GetMoviesCalloutResponse.cls_results[]" name="moviesList"/>
+    <aura:attribute type="MM_GetMoviesCalloutResponse.cls_results[]" name="searchMoviesList" default="{!null}"/>
+    <aura:attribute type="MM_GetSingleMovieCalloutResponse[]" name="favList" default="{!null}"/>
+    <aura:attribute type="MM_GetSingleMovieCalloutResponse[]" name="blackList" default="{!null}"/>
+    <aura:handler event="c:MM_SearchMoviesToDisplayEvent" action="{!c.onGetSearchMovies}"/>
+    <aura:handler event="c:MM_SendFavOrBlackListEvent" action="{!c.onGetFavOrBlackListed}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+
+    <aura:if isTrue="{!and(and(v.searchMoviesList == null, v.favList == null), v.blackList == null)}">
+        <lightning:card title="What's Popular" >
+            <lightning:layout multipleRows="true" class="cardsContainer">
+                <aura:iteration items="{!v.moviesList}" var="movie" >
+                    <lightning:layoutItem size="3" padding="around-small">
+                        <c:MM_MovieTile movieDetails="{!movie}"/>
+                    </lightning:layoutItem>
+                </aura:iteration>
+
+            </lightning:layout>
+        </lightning:card>
+    </aura:if>
+
+    <aura:if isTrue="{!v.searchMoviesList != null}">
+        <lightning:card title="Search result" >
+            <lightning:layout multipleRows="true" class="cardsContainer">
+                <aura:iteration items="{!v.searchMoviesList}" var="movie" >
+                    <lightning:layoutItem size="3" padding="around-small">
+                        <c:MM_MovieTile movieDetails="{!movie}"/>
+                    </lightning:layoutItem>
+                </aura:iteration>
+            </lightning:layout>
+        </lightning:card>
+    </aura:if>
+
+    <aura:if isTrue="{!v.favList != null}">
+        <lightning:card title="Favorite movies" >
+            <lightning:layout multipleRows="true" class="cardsContainer">
+                <aura:iteration items="{!v.favList}" var="movie" >
+                    <lightning:layoutItem size="3" padding="around-small">
+                        <c:MM_MovieTile movieDetails="{!movie}"/>
+                    </lightning:layoutItem>
+                </aura:iteration>
+            </lightning:layout>
+        </lightning:card>
+    </aura:if>
+
+    <aura:if isTrue="{!v.blackList != null}">
+        <lightning:card title="Black list" >
+            <lightning:layout multipleRows="true" class="cardsContainer">
+                <aura:iteration items="{!v.blackList}" var="movie" >
+                    <lightning:layoutItem size="3" padding="around-small">
+                        <c:MM_MovieTile movieDetails="{!movie}"/>
+                    </lightning:layoutItem>
+                </aura:iteration>
+            </lightning:layout>
+        </lightning:card>
+    </aura:if>
+
+
+
+<!--    <c:MM_MovieModal/>-->
+</aura:component>

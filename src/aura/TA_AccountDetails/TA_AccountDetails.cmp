@@ -1,0 +1,36 @@
+<aura:component description="TA_AccountDetails" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global">
+    <aura:handler event="c:TA_EventPassAccountToMap" action="{!c.onInit}"/>
+    <aura:handler event="c:TA_EventClear" action="{!c.onClearAccount}"/>
+    <aura:attribute name="accountToDisplay" type="Account"/>
+    <lightning:card title="Account Details" iconName="standard:account">
+        <aura:if isTrue="{!v.accountToDisplay.Id!=null}">
+            <lightning:layout horizontalAlign="center" verticalAlign="center" multipleRows="true">
+                <lightning:recordViewForm objectApiName="Account" recordId="{!v.accountToDisplay.Id}">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField fieldName="Name">
+                            </lightning:outputField>
+                            <lightning:outputField fieldName="Phone">
+                            </lightning:outputField>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField fieldName="BillingCity">
+                            </lightning:outputField>
+                            <lightning:outputField fieldName="BillingStreet"/>
+                        </div>
+                    </div>
+                </lightning:recordViewForm>
+            </lightning:layout>
+            <lightning:layout horizontalAlign="center" verticalAlign="center">
+                <lightning:button label="View" onclick="{!c.onOpenViewTab}"/>
+                <lightning:button label="Edit" onclick="{!c.onOpenEditTab}"/>
+            </lightning:layout>
+        </aura:if>
+        <aura:if isTrue="{!v.accountToDisplay.Id==null}">
+            <lightning:layout horizontalAlign="center" verticalAlign="center">
+                <p>No data to display</p>
+            </lightning:layout>
+        </aura:if>
+    </lightning:card>
+</aura:component>

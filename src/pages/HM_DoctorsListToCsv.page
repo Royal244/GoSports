@@ -1,0 +1,2 @@
+<apex:page id="HM_DoctorsListToCsv" controller="HM_DoctorController" readOnly="true" contentType="text/csv#Doctors.csv" cache="true" action="{!createCsvString}">{!csvString}
+</apex:page>

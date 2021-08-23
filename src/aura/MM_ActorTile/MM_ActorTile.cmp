@@ -1,0 +1,78 @@
+<aura:component description="MM_ActorTile" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global" controller="MM_ApiServiceTheMovieDB">
+    <aura:registerEvent type="c:MM_SendActorDetailsEvent" name="MM_SendActorDetailsEvent"/>
+    <aura:handler name="init" action="{!c.onInit}" value="{!this}"/>
+    <aura:attribute name="movieUrl" type="String" default="{!null}"/>
+    <aura:attribute name="backgroundImageURL" type="String" default="{!$Resource.noFotoFoundImg}"/>
+    <aura:attribute name="actorDetails" type="Object" access="public"/>
+    <lightning:button class="tile" onclick="{! c.sendActorDetails }">
+
+<!--        <div style="{!'background-image: url(https://www.themoviedb.org/t/p/w138_and_h175_face' + v.actorDetails.profile_path +')'}"-->
+        <aura:if isTrue="{!v.actorDetails.profile_path != null}">
+            <div style="{!'background-image: url(https://www.themoviedb.org/t/p/w138_and_h175_face' + v.actorDetails.profile_path +')'}"
+                 class="innertile">
+                <div class="lower-third">
+                    <p class="slds-truncate">{!v.actorDetails.name}</p>
+                </div>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.actorDetails.profile_path == null}">
+            <div style="{!'background-image: url(' + v.backgroundImageURL +')'}"
+                 class="innertile">
+                <div class="lower-third">
+                    <p class="slds-truncate">{!v.actorDetails.name}</p>
+                </div>
+            </div>
+        </aura:if>
+
+    </lightning:button>
+
+<!--    <aura:if isTrue="{!v.isModalOpen}">-->
+
+<!--        &lt;!&ndash; Modal/Popup Box starts here&ndash;&gt;-->
+<!--        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"-->
+<!--                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">-->
+<!--            <div class="slds-modal__container">-->
+
+
+<!--                    &lt;!&ndash; Modal/Popup Box Header Starts here&ndash;&gt;-->
+<!--&lt;!&ndash;                    <header class="slds-modal__header headerHeader">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <lightning:buttonIcon iconName="utility:close"&ndash;&gt;-->
+<!--&lt;!&ndash;                                              onclick="{! c.closeModel }"&ndash;&gt;-->
+<!--&lt;!&ndash;                                              alternativeText="close"&ndash;&gt;-->
+<!--&lt;!&ndash;                                              variant="bare-inverse"&ndash;&gt;-->
+<!--&lt;!&ndash;                                              class="slds-modal__close"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                        &lt;!&ndash;                    <iframe width="100%" height="320" src="https://www.youtube.com/embed/F9a9FJtqx_o" frameborder="0" class="inFrame"></iframe>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                        <iframe width="100%" height="320" src="{!'https://www.youtube.com/embed/' + v.movieUrl}"&ndash;&gt;-->
+<!--&lt;!&ndash;                                frameborder="0" class="inFrame"></iframe>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </header>&ndash;&gt;-->
+
+<!--                &lt;!&ndash;Modal/Popup Box Body Starts here&ndash;&gt;-->
+<!--                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">-->
+<!--                    <lightning:layout multipleRows="true">-->
+<!--                        <lightning:layoutItem size="5">-->
+<!--                            <img src="{!'https://www.themoviedb.org/t/p/w220_and_h330_face' + v.actorDetails.profile_path}"/>-->
+<!--                        </lightning:layoutItem>-->
+<!--                        <lightning:layoutItem size="7">-->
+<!--                            <p class="movieTitle"><b>{!v.actorDetails.name}</b></p>-->
+<!--                            <p>{!v.actorDetails.character}</p>-->
+<!--                        </lightning:layoutItem>-->
+<!--                    </lightning:layout>-->
+
+<!--                </div>-->
+<!--                &lt;!&ndash;Modal/Popup Box Footer Starts here&ndash;&gt;-->
+<!--                <footer class="slds-modal__footer">-->
+<!--                    <lightning:button variant="neutral"-->
+<!--                                      label="Cancel"-->
+<!--                                      title="Cancel"-->
+<!--                                      onclick="{! c.closeModel }"/>-->
+<!--                    <lightning:button variant="brand"-->
+<!--                                      label="OK"-->
+<!--                                      title="OK"-->
+<!--                                      onclick="{!c.submitDetails}"/>-->
+<!--                </footer>-->
+<!--            </div>-->
+<!--        </section>-->
+<!--        <div class="slds-backdrop slds-backdrop_open"></div>-->
+<!--    </aura:if>-->
+</aura:component>

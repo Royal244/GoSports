@@ -1,0 +1,55 @@
+<apex:page id="HM_HospitalView" standardController="Hospital__c">
+    <apex:sectionHeader title="Hospital" subTitle="{!Hospital__c.Name}"/>
+    <apex:outputText ><a href="/01I090000012eMG?setupid=CustomObjects">« Back to List: Custom Object Definitions</a></apex:outputText>
+    <apex:form >
+        <apex:pageBlock title="Hospital Detail" mode="maindetail">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!edit}" value="Edit"/>
+                <apex:commandButton action="{!delete}" value="Delete"/>
+                <apex:commandButton value="Clone" action="{!URLFOR($Action.Hospital__c.Clone,Hospital__c.Id)}"/>
+                <apex:commandButton value="Sharing" action="{!URLFOR($Action.Hospital__c.Share,Hospital__c.Id)}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2" >
+                <apex:outputField value="{!Hospital__c.Name}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Adress">
+                <apex:outputField value="{!Hospital__c.Country__c}"/>
+                <apex:outputField value="{!Hospital__c.Street_Address__c}"/>
+                <apex:outputField value="{!Hospital__c.Zip_Postal_Code__c}"/>
+                <apex:outputField value="{!Hospital__c.Location__Longitude__s}"/>
+                <apex:outputField value="{!Hospital__c.State_Province__c}"/>
+                <apex:outputField value="{!Hospital__c.Location__Latitude__s}"/>
+                <apex:outputField value="{!Hospital__c.City__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Contact">
+                <apex:outputField value="{!Hospital__c.Telephone_Number__c}"/>
+                <apex:outputField value="{!Hospital__c.E_mail_Adress__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Administrator Info">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Owner"/>
+                    <apex:outputText >
+                        <img src="https://britenet47-dev-ed--c.documentforce.com/profilephoto/005/T" alt="Daniel Siemieńczuk" width="16" height="16" class="chatter-photo" title="Daniel Siemieńczuk"/>
+                        <a target="_blank" href="/{!Hospital__c.OwnerId}">{!Hospital__c.Owner.name}</a> <a href="/a010900000yXWlZ/a?retURL=%2Fa010900000yXWlZ">[Change]</a>
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Created By"/>
+                    <apex:outputText >
+                        <a target="_blank" href="/{!Hospital__c.OwnerId}"><apex:outputField value="{!Hospital__c.Owner.name}"></apex:outputField></a>
+                            {!Hospital__c.CreatedDate}
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Last Modified By"/>
+                    <apex:outputText >
+                        <a target="_blank" href="/{!Hospital__c.OwnerId}"><apex:outputField value="{!Hospital__c.Owner.name}"></apex:outputField></a>
+                            {!Hospital__c.CreatedDate}
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:relatedList list="Contracts__r" title="Contracts">
+    </apex:relatedList>
+</apex:page>

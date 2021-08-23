@@ -1,0 +1,61 @@
+<aura:component description="MM_MovieBrowser" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global" controller="MM_ApiServiceTheMovieDB">
+    <aura:attribute type="String" name="searchString"/>
+    <aura:attribute type="Integer" name="currentPage" default="{!1}" access="public"/>
+    <aura:attribute type="Integer" name="lastPage" default="{!1}" access="public"/>
+    <aura:attribute type="Boolean" name="prevButton" default="{!true}"/>
+    <aura:attribute type="Boolean" name="nextButton" default="{!true}"/>
+    <aura:attribute type="Boolean" name="displayPagination" default="{!false}"/>
+    <aura:registerEvent type="c:MM_SearchMoviesToDisplayEvent" name="MM_SearchMoviesToDisplayEvent"/>
+    <aura:registerEvent type="c:MM_SendFavOrBlackListEvent" name="MM_SendFavOrBlackListEvent"/>
+    <div  style="margin-bottom:15px">
+        <lightning:layout multipleRows="true" verticalAlign="center" >
+            <lightning:layoutItem size="4">
+                <lightning:input
+                        name="enter-search"
+                        type="search"
+                        value="{!v.searchString}"
+                ></lightning:input>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="2" class="fieldButtons">
+                <lightning:button class="searchButton" label="Search" variant="brand" onclick="{!c.onSearchMovies}"></lightning:button>
+                <lightning:button label="Clear" onclick="{!c.onClear}"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                <lightning:button variant="brand" class="buttons" label="Favorite movies" onclick="{!c.onTakeFavorites}"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="3">
+                <lightning:button variant="destructive" class="buttons" label="Black list" onclick="{!c.onTakeBlackList}"/>
+            </lightning:layoutItem>
+        </lightning:layout>
+
+        <aura:if isTrue="{!v.displayPagination}">
+            <lightning:layout class="pagination" verticalAlign="center" multipleRows="true">
+                <lightning:layoutItem size="12">
+                    <p>You are on {!v.currentPage} of {!v.lastPage} pages.</p>
+                    <lightning:button disabled="{!v.prevButton}" label="Previous" onclick="{!c.onGoPrevious}"/>
+                    <lightning:button disabled="{!v.nextButton}" label="Next" onclick="{!c.onGoNext}"/>
+                    <!--                <lightning:button label="Go"/>-->
+                    <!--                <lightning:input type="number" max="10" min="1"/>-->
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+
+
+    </div>
+<!--    <div>-->
+<!--        &lt;!&ndash;        <lightning:buttonGroup class="buttonGroup">&ndash;&gt;-->
+<!--        <lightning:layout class="buttonGroup" horizontalAlign="center" verticalAlign="center">-->
+<!--            <lightning:layoutItem size="3">-->
+<!--&lt;!&ndash;                <lightning:button class="buttons" label="Add movie"/>&ndash;&gt;-->
+<!--            </lightning:layoutItem>-->
+<!--            -->
+<!--            <lightning:layoutItem size="3">-->
+<!--&lt;!&ndash;                <lightning:button class="buttons" label="Random movie"/>&ndash;&gt;-->
+<!--            </lightning:layoutItem>-->
+<!--        </lightning:layout>-->
+
+<!--        &lt;!&ndash;        </lightning:buttonGroup>&ndash;&gt;-->
+<!--    </div>-->
+
+</aura:component>

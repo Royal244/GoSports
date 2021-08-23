@@ -1,0 +1,445 @@
+<apex:page id="HM_ExternalDoctorsSearch" docType="html-5.0" controller="HM_ExternalDoctorsController"
+           lightningStylesheets="true">
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <apex:stylesheet value="{!$Resource.toastCss}"/>
+    <apex:includeScript value="{!$Resource.toastJs}"/>
+    <head>
+        <apex:slds/>
+        <style>
+            .slds-scope .slds-button+.slds-button {
+                margin-right: 8px;
+            }
+            .slds-scope{
+                margin-top:10px;
+            }
+            .modal {
+            display: none;
+            }
+            .info{
+                display:none;
+            }
+            .confirm{
+                display:none;
+            }
+            .message{
+                margin-top:15px;
+            }
+
+        </style>
+    </head>
+    <apex:form id="form">
+        <apex:actionFunction name="clearMessages" action="{!clearApexMessages}"/>
+        <article class="slds-card">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__body">
+                        <h1 class="slds-text-heading_medium slds-m-bottom_xx-small">{!$Label.HM_externalFinderTitle}</h1>
+                    </div>
+                    <div class="slds-no-flex">
+                        <apex:commandButton styleClass="slds-button slds-button_neutral" value="{!$Label.newButton}"
+                                            action="{!clearApexMessages}"
+                                            status="status" reRender="main, modal, addModalPanel, addModal, msg"
+                                            onComplete="$('#myModal').modal({backdrop:'static'}).show(); return false;"/>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-form" role="list">
+                    <fieldset class="slds-form-element slds-form-element_compound">
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_6-of-12">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label"
+                                               for="inputName">{!$Label.firstName}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputText value="{!searchWrapper.doctorName}" styleClass="slds-input"
+                                                            id="inputName"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-size_6-of-12">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label"
+                                               for="inputLastName">{!$Label.lastName}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputText value="{!searchWrapper.doctorLastName}"
+                                                            styleClass="slds-input" id="inputLastName"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_6-of-12">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="inputEmail">{!$Label.eMail}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputText value="{!searchWrapper.doctorEmail}" styleClass="slds-input"
+                                                            id="inputEmail"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-size_6-of-12">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label"
+                                               for="inputCountry">{!$Label.Country}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputText value="{!searchWrapper.doctorCountry}"
+                                                            styleClass="slds-input" id="inputCountry"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_12-of-12"
+                                     style="float:left; display:inline-block; text-align:center; margin-top:10px;">
+                                    <apex:commandButton styleClass="slds-button slds-button_neutral"
+                                                        style="margin-right:5px;"
+                                                        action="{!getDoctors}" value="{!$Label.buttonSearch}">
+                                    </apex:commandButton>
+                                    <apex:commandButton styleClass="slds-button slds-button_neutral"
+                                                        action="{!clear}" value="{!$Label.clearButton}">
+                                    </apex:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <h2 id="element-with-table-label" class="slds-text-heading_medium slds-m-bottom_xx-small">Search
+                    result</h2>
+                <apex:pageBlock id="table">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+                           aria-labelledby="element-with-table-label other-element-with-table-label">
+                        <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.action}">{!$Label.action}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.firstName}">{!$Label.firstName}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.lastName}">{!$Label.lastName}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.eMail}">{!$Label.eMail}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.Country}">{!$Label.Country}</div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <apex:repeat value="{!doctorWrappers}" var="doctor">
+                            <tr class="slds-hint-parent">
+                                <td data-label="Action">
+                                    <div class="slds-truncate">
+                                        <apex:commandLink value="Edit" style="margin-right:5px;"
+                                                          status="status"
+                                                          reRender="editModal, editForm,addModalPanel, addModal, msg"
+                                                          action="{!getDoctorToEdit}"
+                                                          onComplete="$('#editModal').modal({backdrop:'static'}).show(); return false;">
+                                            <apex:param value="{!doctor.doctorId}" name="doctorIdToEdit"/>
+                                        </apex:commandLink>
+                                        <apex:commandLink value="Delete" action="{!getIdToDelete}"
+                                                          onComplete="$('#confirm').modal({backdrop:'static'}).show(); return false;">
+                                            <apex:param value="{!doctor.doctorId}" name="doctorId"/>
+                                        </apex:commandLink>
+                                    </div>
+                                </td>
+                                <td data-label="{!$Label.firstName}">
+                                    <div class="slds-truncate">{!doctor.doctorName}</div>
+                                </td>
+                                <td data-label="{!$Label.lastName}">
+                                    <div class="slds-truncate">{!doctor.doctorLastName}</div>
+                                </td>
+                                <td data-label="{!$Label.eMail}">
+                                    <div class="slds-truncate">{!doctor.doctorEmail}</div>
+                                </td>
+                                <td data-label="{!$Label.Country}">
+                                    <div class="slds-truncate">{!doctor.doctorCountry}</div>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                        </tbody>
+                    </table>
+                </apex:pageBlock>
+            </div>
+            <apex:pageMessages/>
+        </article>
+    </apex:form>
+    <apex:outputPanel id="addModalPanel">
+        <div id="myModal" class="modal slds-scope">
+            <apex:form id="addModal">
+                <apex:actionFunction name="clearAddModal" action="{!clearAddDoctorModal}" reRender="none"/>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+                         aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 id="modal-heading-01"
+                                class="slds-modal__title slds-hyphenate">{!$Label.HM_addDoctorTitle}</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <fieldset class="slds-form-element slds-form-element_compound">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="name"><abbr
+                                                        class="slds-required" title="required">* </abbr>{!$Label.firstName}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText required="true" id="name"
+                                                                    value="{!addDoctorWrapper.doctorName}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="lastName"><abbr
+                                                        class="slds-required" title="required">* </abbr>{!$Label.lastName}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText required="true" id="lastName"
+                                                                    value="{!addDoctorWrapper.doctorLastName}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="email"><abbr
+                                                        class="slds-required" title="required">* </abbr>{!$Label.eMail}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText required="true" id="email"
+                                                                    value="{!addDoctorWrapper.doctorEmail}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="country"><abbr
+                                                        class="slds-required" title="required">* </abbr>{!$Label.Country}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="country" required="true"
+                                                                    value="{!addDoctorWrapper.doctorCountry}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="telephone"><abbr
+                                                        class="slds-required" title="required">* </abbr>Telephone
+                                                    number</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="telephone" required="true"
+                                                                    value="{!addDoctorWrapper.doctorTelephone}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <apex:pageMessages id="msg"/>
+                            </fieldset>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <apex:commandButton styleClass="slds-button slds-button_neutral"
+                                                onClick="closeModalCancel();" reRender="addModalPanel, addModal"
+                                                value="{!$Label.cancelButton}"/>
+                            <apex:commandbutton action="{!addDoctor}" styleClass="slds-button slds-button_brand"
+                                                value="{!$Label.saveImg}"
+                                                onComplete="showMessage({!isSuccess}); return false;"
+                                                reRender="msg"></apex:commandbutton>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </apex:form>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel id="editForm">
+        <div id="editModal" class="modal slds-scope">
+            <apex:form>
+                <apex:actionFunction name="clearMessages" action="{!clearApexMessages}"/>
+                <!--                <apex:actionFunction name="leaveNotEditedDoctor" action="{!leaveNotEditedDoctor}"/>-->
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+                         aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Edit Doctor</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <fieldset class="slds-form-element slds-form-element_compound">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="nameEdit"><abbr
+                                                        class="slds-required"
+                                                        title="required">* </abbr>{!$Label.firstName}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="nameEdit" required="true"
+                                                                    value="{!editDoctorWrapper.doctorName}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="lastNameEdit"><abbr
+                                                        class="slds-required" title="required">* </abbr>Last
+                                                    Name</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="lastNameEdit" required="true"
+                                                                    value="{!editDoctorWrapper.doctorLastName}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="emailEdit"><abbr
+                                                        class="slds-required" title="required">* </abbr>{!$Label.eMail}
+                                                </label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="emailEdit" required="true"
+                                                                    value="{!editDoctorWrapper.doctorEmail}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="countryEdit"><abbr
+                                                        class="slds-required"
+                                                        title="required">* </abbr>{!$Label.Country}</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="countryEdit" required="true"
+                                                                    value="{!editDoctorWrapper.doctorCountry}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-size_1-of-2">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label" for="telephoneEdit"><abbr
+                                                        class="slds-required" title="required">* </abbr>Telephone number</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="telephoneEdit" required="true"
+                                                                    value="{!editDoctorWrapper.doctorTelephone}"
+                                                                    styleClass="slds-input"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <apex:pageMessages id="editMsg"/>
+                            </fieldset>
+
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <apex:commandbutton styleClass="slds-button slds-button_neutral"
+                                                value="{!$Label.cancelButton}" reRender="editForm"
+                                                action="{!leaveNotEditedDoctor}"
+                                                onComplete="closeEdit();"></apex:commandbutton>
+                            <apex:commandbutton action="{!editDoctor}" styleClass="slds-button slds-button_brand"
+                                                onComplete="showMessageEditModal({!isSuccess}); return false;"
+                                                reRender="table, editMsg"
+                                                value="{!$Label.updateButton}"></apex:commandbutton>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </apex:form>
+        </div>
+    </apex:outputPanel>
+    <apex:outputPanel>
+        <div id="confirm" class="modal slds-scope">
+            <apex:form>
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                         aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container" style="max-width:25rem;">
+                        <header class="slds-modal__header">
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!$Label.confirmMsg}</h2>
+                        </header>
+
+                        <footer class="slds-modal__footer " style="text-align:center;">
+                            <button class="slds-button slds-button_neutral">{!$Label.no}</button>
+                            <apex:commandButton action="{!deleteDoctor}" styleClass="slds-button slds-button_brand"
+                                                value="{!$Label.yes}"></apex:commandButton>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </apex:form>
+        </div>
+    </apex:outputPanel>
+    <script>
+	function closeModalCancel() {
+      $('#myModal').modal('hide');
+      clearAddModal();
+      window.location.reload();
+	}
+
+	function closeModal() {
+      $('#myModal').modal('hide');
+      clearAddModal();
+	}
+	function closeEdit(){
+	   $('#editModal').modal('hide');
+//	   window.location.reload();
+ }
+    function closeConfirmMessage(){
+        $('#confirm').modal('hide');
+    }
+    function showMessageEditModal(isSuccess){
+        console.log(isSuccess);
+        if(isSuccess == false){
+$.toast({
+    heading: 'Error',
+    showHideTransition: 'fade',
+    icon: 'error'
+})
+        }
+        if(isSuccess == true){
+            closeEdit();
+            $.toast({
+    heading: 'Success',
+    showHideTransition: 'slide',
+    icon: 'success'
+})
+        }
+    }
+
+    function showMessage(isSuccess){
+        console.log(isSuccess);
+        if(isSuccess == false){
+$.toast({
+    heading: 'Error',
+    showHideTransition: 'fade',
+    icon: 'error'
+})
+        }
+        if(isSuccess == true){
+            closeModal();
+            $.toast({
+    heading: 'Success',
+    showHideTransition: 'slide',
+    icon: 'success'
+})
+        }
+    }
+
+    </script>
+</apex:page>

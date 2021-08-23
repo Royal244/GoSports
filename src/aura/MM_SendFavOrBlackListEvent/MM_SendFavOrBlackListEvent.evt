@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="MM_SendFavOrBlackListEvent">
+    <aura:attribute type="MM_GetSingleMovieCalloutResponse[]" name="favList"/>
+    <aura:attribute type="MM_GetSingleMovieCalloutResponse[]" name="blackList"/>
+</aura:event>

@@ -1,0 +1,2 @@
+<aura:event type="APPLICATION" description="TA_EventClear">
+</aura:event>

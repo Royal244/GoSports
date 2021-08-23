@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="TA_EventPassAccountToMap">
+    <aura:attribute type="Account" name="account"/>
+</aura:event>

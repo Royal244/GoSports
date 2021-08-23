@@ -1,0 +1,35 @@
+<apex:page id="HM_NewEditDoctor" standardController="Doctor__c" extensions="HM_SaveAndNewDoctorButtonController">
+    <apex:sectionHeader title="Doctor Edit" subTitle="New Doctor"/>
+    <apex:form>
+        <apex:pageBlock title="Doctor Edit" mode="edit">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!SaveAndNew}" value="Save & New"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2" title="Basic Information">
+                <apex:inputField value="{!Doctor__c.Last_Name__c}" />
+                <apex:inputField value="{!Doctor__c.Gender__c}" />
+                <apex:inputField value="{!Doctor__c.Name}" required="true" />
+                <apex:inputField value="{!Doctor__c.Specialization__c}" />
+                <apex:inputField value="{!Doctor__c.Date_of_birth__c}" />
+                <apex:inputField value="{!Doctor__c.ExternalId__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Contact">
+                <apex:inputField value="{!Doctor__c.Telephone_Number__c}" />
+                <apex:inputField value="{!Doctor__c.E_mail_Adress__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Address">
+                <apex:inputField value="{!Doctor__c.Country__c}" />
+                <apex:inputField value="{!Doctor__c.Street_Address__c}" />
+                <apex:inputField value="{!Doctor__c.State_Pr__c}" />
+                <apex:inputField value="{!Doctor__c.Zip_Postal_Code__c}" />
+                <apex:inputField value="{!Doctor__c.City__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Administrator Info">
+                <apex:outputField value="{!Doctor__c.Owner.Name}" label="Owner"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageMessages ></apex:pageMessages>
+    </apex:form>
+</apex:page>

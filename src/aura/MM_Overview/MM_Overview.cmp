@@ -1,0 +1,17 @@
+<aura:component description="MM_Overview" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global" controller="MM_ApiServiceTheMovieDB">
+    <div class="slds-var-m-horizontal_xx-large">
+        <c:MM_MovieBrowser/>
+    </div >
+    <div class="slds-var-m-horizontal_xx-large">
+        <c:MM_MovieTrendingMovies/>
+    </div>
+    <div>
+        <c:MM_MovieTileModal/>
+    </div>
+    <div>
+        <c:MM_ActorTileModal/>
+    </div>
+
+
+</aura:component>

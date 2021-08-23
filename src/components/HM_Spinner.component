@@ -1,0 +1,24 @@
+<apex:component id="HM_Spinner">
+    <apex:actionStatus id="Spinner">
+        <apex:facet name="start">
+<!--            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">-->
+<!--                &nbsp;-->
+<!--            </div>-->
+<!--            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">-->
+<!--                <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">-->
+<!--                    <img src="/img/loading.gif" style="float: left; margin: 8px;" />-->
+<!--                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="demo-only demo-only" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.6; z-index: 1000; background-color: black;">
+                <div class="slds-spinner_container">
+                    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inverse">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+        </apex:facet>
+    </apex:actionStatus>
+</apex:component>

@@ -1,0 +1,70 @@
+<aura:component description="MM_MovieReviews" controller="MM_ApiServiceTheMovieDB">
+    <aura:attribute name="movie" type="Object" access="public"/>
+    <aura:attribute name="movieReviews" type="Movie_review__c[]" access="public"/>
+<!--    <aura:attribute name="movieReviews" type="Object[]" access="public"/>-->
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.movie}" action="{!c.doInit}"/>
+
+    <aura:method name="refresh" action="{!c.doInit}" access="public"/>
+
+    <ui:scrollerWrapper class="slds-feed">
+
+        <ul >
+            <aura:iteration items="{!v.movieReviews}" var="movieReview">
+
+                <li class="slds-feed__item">
+                    <article class="slds-post">
+
+                        <header class="slds-post__header slds-media">
+
+                            <div class="slds-media__figure">
+                                <a href="javascript:void(0);" class="slds-avatar slds-avatar_circle">
+                                    <img alt="{!movieReview.CreatedBy.Name}"
+                                         src="{!movieReview.CreatedBy.SmallPhotoUrl}"
+                                         title="{!movieReview.CreatedBy.Name}" />
+                                </a>
+                            </div>
+
+                            <div class="slds-media__body">
+                                <div>
+                                    <p>
+                                        <a href="javascript:void(0);"
+                                           title="{!movieReview.CreatedBy.Name}"
+                                           data-userid="{!movieReview.CreatedBy.Id}"
+                                           onclick="{!c.onUserInfoClick}">
+                                                {!movieReview.CreatedBy.Name}
+                                        </a>
+                                        <aura:if isTrue="{!movieReview.CreatedBy.CompanyName}">
+                                            — {!movieReview.CreatedBy.CompanyName}
+                                        </aura:if>
+                                    </p>
+                                    <p>
+                                        <lightning:formattedDateTime value="{!movieReview.CreatedDate}" />&nbsp;
+                                        <lightning:formattedDateTime value="{!movieReview.CreatedDate}" hour="numeric" minute="numeric" second="numeric"/>
+                                    </p>
+                                </div>
+                            </div>
+
+                        </header>
+
+                        <div class="slds-post__content slds-text-longform">
+                            <p style="font-size:24px;"><b>{!movieReview.Name}</b></p>
+                            <lightning:formattedRichText value="{!movieReview.Comment__c}" />
+                            <c:MM_FiveStarRating value="{!movieReview.Rating__c}" readonly="true"/>
+                        </div>
+
+                    </article>
+                </li>
+
+            </aura:iteration>
+        </ul>
+
+        <aura:if isTrue="{!v.movieReviews.length==0}">
+            <div class="slds-align_absolute-center">
+                No reviews available
+            </div>
+        </aura:if>
+
+    </ui:scrollerWrapper>
+</aura:component>

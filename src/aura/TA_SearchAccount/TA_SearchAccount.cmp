@@ -1,0 +1,17 @@
+<aura:component description="TA_SearchAccount" implements="force:appHostable,flexipage:availableForAllPageTypes"
+                access="global" controller="TA_SearchAccountController">
+    <aura:attribute name="accountName" type="String" default=""/>
+    <aura:attribute name="accounts" type="Account[]"/>
+    <aura:registerEvent name="TA_SearchResult" type="c:TA_SearchResult"/>
+    <aura:registerEvent name="TA_EventClear" type="c:TA_EventClear"/>
+    <aura:handler event="c:TA_EventPassAccountToMap" action="{!c.onStartEmpty}"/>
+    <lightning:card>
+        <lightning:layout verticalAlign="center" horizontalAlign="center">
+            <lightning:layoutItem class="slds-var-m-around_medium">
+                <lightning:input label="First Name" type="text" value="{!v.accountName}" name="inputFirstName"/>
+            </lightning:layoutItem>
+                    <lightning:button class="myButton" label="Search" name="searchButton" variant="brand" onclick="{!c.onSearchAccounts}"/>
+                    <lightning:button class="myButton" label="Clear" name="clearButton" variant="neutral" onclick="{!c.onClear}"/>
+        </lightning:layout>
+    </lightning:card>
+</aura:component>

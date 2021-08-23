@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="TA_SearchResult">
+    <aura:attribute type="Account[]" name="accounts"/>
+<!--    <aura:attribute name="mapMarkers" type="Object"/>-->
+</aura:event>

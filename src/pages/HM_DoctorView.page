@@ -1,0 +1,444 @@
+<apex:page id="HM_DoctorView" docType="html-5.0" standardController="Doctor__c"
+           extensions="HM_SingleHireModalControler, HM_AddAvatarPictureController">
+    <apex:includeScript value="{!$Resource.jQuery}"/>
+    <apex:includeScript value="{!$Resource.jQueryUI}"/>
+    <apex:stylesheet value="{!$Resource.jCropCss}"/>
+    <apex:includeScript value="{!$Resource.jCropJs}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jQueryUiCssAndImg, 'jquery-ui.min.css')}"/>
+    <apex:sectionHeader title="Doctor" subTitle="{!Doctor__c.Name}"/>
+    <apex:outputText><a href="/01I090000012eLD?setupid=CustomObjects">« Back to List: Custom Object Definitions</a>
+    </apex:outputText>
+    <apex:form>
+        <apex:pageBlock title="Doctor Detail" mode="maindetail">
+            <apex:pageBlockButtons>
+                <apex:commandButton action="{!edit}" value="Edit"/>
+                <apex:commandButton action="{!delete}" value="Delete"/>
+                <apex:commandButton value="Clone" action="{!URLFOR($Action.Doctor__c.Clone,Doctor__c.id)}"/>
+                <apex:commandButton value="Sharing" action="{!URLFOR($Action.Doctor__c.Share,Doctor__c.Id)}"/>
+                <apex:commandButton value="{!$Label.hireButton}" onClick="openModal()" reRender="form1, form2"/>
+            </apex:pageBlockButtons>
+            <div style="float:left">
+                <apex:pageBlockSection collapsible="true" columns="1">
+                    <apex:image style="display:block; margin-left: auto; margin-right: auto;" width="60"
+                                height="60" rendered="{!attachment.Id == null}"
+                                url="{!$Resource.avatarPicture}"/>
+                    <apex:image style="display:block; margin-left: auto; margin-right: auto;" width="60" height="60"
+                                rendered="{!attachment.Id != null}"
+                                url="/servlet/servlet.FileDownload?file={!attachment.Id}"
+                    />
+                    <apex:pageBlockSection>
+                        <apex:commandButton value="Add picture"
+                                            onClick="$('#imgInp').val('');$('#newPhotoDialog').dialog('open'); return false; "
+                                            immediate="true"
+                                            status="status"
+                                            style="display:block; margin-left: auto; margin-right: auto;"/>
+                        <apex:commandButton value="Remove" disabled="{!attachment.Id == null}"
+                                            onClick="$('#photoDeleteConfirm').dialog('open'); return false;"
+                                            style="display:block; margin-left: auto; margin-right: auto;"/>
+                    </apex:pageBlockSection>
+                </apex:pageBlockSection>
+            </div>
+            <div style="margin-left:180px">
+                <apex:pageBlockSection collapsible="true" columns="2" title="Basic Information">
+                    <!--                <apex:pageBlockSectionItem>-->
+                    <!--                    <apex:pageBlockSection collapsible="false" columns="1">-->
+                    <!--                        <apex:image style="display:block; margin-left: auto; margin-right: auto;" width="80"-->
+                    <!--                                    height="80" rendered="{!attachment.Id == null}"-->
+                    <!--                                    url="{!$Resource.avatarPicture}"/>-->
+                    <!--                        <apex:image style="display:block; margin-left: auto; margin-right: auto;" width="80" height="80"-->
+                    <!--                                    rendered="{!attachment.Id != null}"-->
+                    <!--                                    url="/servlet/servlet.FileDownload?file={!attachment.Id}"-->
+                    <!--                        />-->
+                    <!--                        <apex:pageBlockSection >-->
+                    <!--                            <apex:commandButton value="Add picture"-->
+                    <!--                                                onClick="$('#imgInp').val('');$('#newPhotoDialog').dialog('open'); return false; "-->
+                    <!--                                                immediate="true"-->
+                    <!--                                                status="status"-->
+                    <!--                                                style="display:block; margin-left: auto; margin-right: auto;"/>-->
+                    <!--                            <apex:commandButton value="Remove" disabled="{!attachment.Id == null}"-->
+                    <!--                                                onClick="$('#photoDeleteConfirm').dialog('open'); return false;"-->
+                    <!--                                                style="display:block; margin-left: auto; margin-right: auto;"/>-->
+                    <!--                        </apex:pageBlockSection>-->
+                    <!--                    </apex:pageBlockSection>-->
+                    <!--                    <apex:pageBlockSection columns="1">-->
+                    <apex:outputField value="{!Doctor__c.Last_Name__c}"/>
+                    <apex:outputField value="{!Doctor__c.Gender__c}"/>
+                    <apex:outputField value="{!Doctor__c.Name}"/>
+                    <apex:outputField value="{!Doctor__c.Specialization__c}"/>
+                    <apex:outputField value="{!Doctor__c.Date_of_birth__c}"/>
+                    <apex:outputField value="{!Doctor__c.ExternalId__c}"/>
+                    <!--                    </apex:pageBlockSection>-->
+                    <!--                </apex:pageBlockSectionItem>-->
+                    <!--                <apex:pageBlockSection columns="1">-->
+                    <!--                </apex:pageBlockSection>-->
+                </apex:pageBlockSection>
+            </div>
+            <apex:pageBlockSection columns="2" title="Contact">
+                <apex:outputField value="{!Doctor__c.Telephone_Number__c}"/>
+                <apex:outputField value="{!Doctor__c.E_mail_Adress__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Address">
+                <apex:outputField value="{!Doctor__c.Country__c}"/>
+                <apex:outputField value="{!Doctor__c.Street_Address__c}"/>
+                <apex:outputField value="{!Doctor__c.State_Pr__c}"/>
+                <apex:outputField value="{!Doctor__c.Zip_Postal_Code__c}"/>
+                <apex:outputField value="{!Doctor__c.City__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2" title="Administrator Info">
+                <apex:pageBlockSectionItem>
+                    <apex:outputLabel value="Owner"/>
+                    <apex:outputText>
+                        <img src="/profilephoto/005/T" width="16" height="16" class="chatter-photo"/>
+                        <a target="_blank" href="/{!Doctor__c.OwnerId}">{!Doctor__c.Owner.name}</a> <a
+                            href="/{!Doctor__c.Id}/a?retURL=%2F{!Doctor__c.Id}">[Change]</a>
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem>
+                    <apex:outputLabel value="Created By"/>
+                    <apex:outputText>
+                        <a target="_blank" href="/{!Doctor__c.OwnerId}">
+                            <apex:outputField value="{!Doctor__c.Owner.name}"></apex:outputField>
+                        </a>
+                        {!Doctor__c.CreatedDate}
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem>
+                    <apex:outputLabel value="Last Modified By"/>
+                    <apex:outputText>
+                        <a target="_blank" href="/{!Doctor__c.OwnerId}">
+                            <apex:outputField value="{!Doctor__c.Owner.name}"></apex:outputField>
+                        </a>
+                        {!Doctor__c.CreatedDate}
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:relatedList list="Contracts__r" title="Contracts">
+    </apex:relatedList>
+    <apex:outputPanel id="modal">
+        <script>
+  $( function() {
+    $( "#dialog" ).dialog({
+      autoOpen: false,
+      width: 800,
+      modal: true,
+      close: function() {
+            clearForm();
+            console.log('12312313');
+      }
+    });
+
+  } );
+  function closeModal(){
+      $( "#dialog" ).dialog( "close" );
+      console.log('asdasdad');
+  }
+  function openModal(){
+      $( "#dialog" ).dialog( "open" );
+      return false;
+  }
+  function saveContract(isAdded){
+console.log(isAdded);
+if (isAdded == true){
+    clearForm();
+    $( "#dialog" ).dialog( "close" );
+    window.location.reload();
+}
+
+  }
+
+        </script>
+        <head>
+            <style type="text/css">
+                .datePicker{
+                    z-index:99999;
+                }
+                .ui-widget.ui-widget-content{
+                    top:120px !important;
+                }
+
+            </style>
+        </head>
+        <body>
+        <div id="dialog" title="{!$Label.hireDoctorModal}">
+            <apex:form id="form1">
+                <apex:actionFunction name="clearForm" action="{!clearModal}" reRender="form1, form2" immediate="true"/>
+                <apex:pageBlock id="searchBlock">
+                    <apex:pageBlockSection columns="2">
+                        <apex:inputField value="{!hospital.name}" required="false"/>
+                        <apex:inputField value="{!hospital.City__c}" required="false"/>
+                        <apex:inputField value="{!hospital.Country__c}" required="true"/>
+                    </apex:pageBlockSection>
+                    <center>
+                        <apex:commandButton action="{!searchHospitals}" value="{!$Label.buttonSearch}"
+                                            reRender="form1, form2, dates, hospitalTable"/>
+                        <apex:actionRegion>
+                            <apex:commandButton value="{!$Label.clearButton}" onClick="clearForm(); return false;"
+                                                reRender="form1, form2, hospitalTable, searchBlock"
+                                                style="margin-left:10px"
+                                                disabled="{!clearButton}"
+                            />
+                        </apex:actionRegion>
+                    </center>
+                </apex:pageBlock>
+                <apex:pageBlock title="{!$Label.searchResult}" id="hospitalTable" rendered="{!renderTable}">
+                    <apex:pageBlockTable value="{!elements}" var="item">
+                        <apex:column headerValue="{!$Label.action}">
+                            <apex:commandLink action="{!selectHospital}" value="{!$Label.select}"
+                                              reRender="form1, form2"
+                                              rendered="{!NOT(item.isSelected)}"
+                                              immediate="true"
+                            >
+                                <apex:param value="{!item.hospital.Id}" name="hospitalId"/>
+                            </apex:commandLink>
+                            <apex:outputText value="{!$Label.select}" rendered="{!item.isSelected}"/>
+                        </apex:column>
+                        <apex:column headerValue="{!$Label.name}" value="{!item.hospital.Name}"/>
+                        <apex:column headerValue="{!$Label.city}" value="{!item.hospital.City__c}"/>
+                        <apex:column headerValue="{!$Label.country}" value="{!item.hospital.Country__c}"/>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+            </apex:form>
+            <apex:form id="form2">
+                <apex:pageBlock title="{!$Label.contractDetails}" id="dates" rendered="{!renderHireDates}">
+                    <apex:pageBlockSection columns="2">
+                        <apex:inputField value="{!contract.Start_Date__c}"/>
+                        <apex:inputField value="{!contract.End_Date__c}"/>
+                        <apex:inputField value="{!contract.Salary__c}"/>
+                    </apex:pageBlockSection>
+                    <center>
+                        <apex:commandButton value="{!$Label.hireButton}" reRender="hospitalTable, dates, msg"
+                                            action="{!hireDoctor}" oncomplete="saveContract({!isAdded});"/>
+                        <apex:commandButton value="{!$Label.cancelButton}" style="margin-left:10px"
+                                            onClick="closeModal(); return false;"
+                                            reRender="form1, form2"
+                                            immediate="true"/>
+                    </center>
+                    <apex:pageMessages></apex:pageMessages>
+                </apex:pageBlock>
+                <apex:pageMessages></apex:pageMessages>
+            </apex:form>
+        </div>
+        </body>
+    </apex:outputPanel>
+    <apex:outputPanel id="addImageModal">
+        <style>
+            .jcrop-holder{
+                margin-left:auto;
+                margin-right:auto;
+            }
+
+        </style>
+        <body>
+        <div id="addImg">
+            <apex:form>
+                <apex:actionFunction action="{!setLastAttachment}" name="fetchDoctorImage"/>
+                <apex:actionFunction action="{!deleteImages}" name="removeDoctorImage"/>
+                <div>
+                    <div id="newPhotoDialog" role="dialog">
+                        <apex:pageBlock id="PictureUploadBlock">
+                            <apex:pageBlockSection>
+                                <input type='file' accept=".jpeg, .jpg, .png" id="imgInp"
+                                       style="display: block; margin-left: auto; margin-right: auto;"/>
+                            </apex:pageBlockSection>
+                            <div id="photoDialogContent">
+                                <div id="targetContainer">
+                                    <img id="target" class="crop" src="#"
+                                         style="border:1px solid; border-radius:50%; display: block; margin-left: auto; margin-right: auto;"/>
+                                </div>
+                                <div class="centerContent">
+                                    <canvas id="preview" width="200" height="200"
+                                            style=" border:1px solid; display: block; margin-left: auto; margin-right: auto; margin-top:10px"></canvas>
+                                </div>
+                            </div>
+                            <div id="newPhotoSave" class="centerContent">
+                                <apex:commandButton value="{!$Label.saveImg}"
+                                                    onClick="saveImage();$('#newPhotoDialog').dialog('close'); return false;"
+                                                    style="display: block; margin-left: auto; margin-right: auto; margin-top:10px"/>
+                            </div>
+                        </apex:pageBlock>
+                    </div>
+                    <div id="photoDeleteConfirm">
+                        <apex:pageBlock>
+                            <apex:actionFunction name="deleteDoctorImages"
+                                                 rerender="DoctorDetailsBlock,DoctorProfileImage,DoctorViewForm"/>
+                            <div class="centerContent photoDeleteButtons">
+                                <apex:outputText value="{!$Label.confirmMsg}"/>
+                                <br/>
+                                <apex:commandButton value="Yes"
+                                                    onClick="deleteDoctorImages();$('#photoDeleteConfirm').dialog('close'); return false;"/>
+                                <apex:commandButton value="No"
+                                                    onClick="$('#photoDeleteConfirm').dialog('close'); return false;"/>
+                            </div>
+                        </apex:pageBlock>
+                    </div>
+                </div>
+            </apex:form>
+        </div>
+        </body>
+        <script>
+  $( function() {
+    $( "#addImg" ).dialog({
+      autoOpen: false,
+      width: 800,
+      modal: true,
+    });
+
+  } );
+  function closeAddImgModal(){
+      $( "#addImg" ).dialog( "close" );
+      console.log('asdasdad');
+  }
+  function openAddImgModal(){
+      $( "#addImg" ).dialog( "open" );
+      return false;
+  }
+
+window.$Label = window.$Label || {};
+    $Label.HRHM_MaxSize = 'Maxsize';
+    <!--{!$Label.HRHM_Max_Size}-->
+    $Label.HRHM_photoDelete = 'photodelete';
+    <!--{!($Label.HRHM_Delete_Photo)}-->
+    $Label.HRHM_maxInput = '1MB';
+    $Label.HRHM_PhotoDialog = 'photodialog';
+    <!--{!($Label.HRHM_Upload_Photo)}-->
+        const inputInvalid = $Label.HRHM_MaxSize;
+        const maxInputSize = $Label.HRHM_maxInput;
+
+        $(".testcc").each(function( index ) {
+        if((index % 2)==0)$(this).css('width','20%');
+        else $(this).css('width','80%');
+        });
+
+        $(function () {
+            $("#newPhotoDialog").dialog({
+                autoOpen: false,
+                title: "{!$Label.HM_uploadFileTitle}",
+                maxWidth: 1200,
+                maxHeight: 700,
+                modal: true,
+                width: 700,
+            });
+            $("#popup").dialog({
+                autoOpen: false,
+                title:" {!$Label.titleToDeleteImg}",
+                maxWidth: 1200,
+                maxHeight: 700,
+                width: 700,
+            });
+
+            $("#photoDeleteConfirm").dialog({
+
+                autoOpen: false,
+                title: "{!$Label.titleToDeleteImg}",
+                maxWidth: 800,
+                maxHeight: 300,
+                width: 500,
+                height: 125,
+            });
+            $("#newPhotoSave").hide();
+            $("#photoDialogContent").hide();
+            $("#newPhotoDialog").on("dialogopen", function (event, ui) {
+                clearSourceAndPreview();
+                $("#photoDialogContent").hide();
+            });
+        });
+        $("#imgInp").change(function () {
+            readURL(this);
+        });
+        function clearSourceAndPreview() {
+            $("#targetContainer").html('');
+            let newImage = $(' <img id="target" class="crop" src="#"/>');
+            $("#targetContainer").prepend(newImage);
+            canvas = $("#preview")[0];
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            $("#newPhotoSave").hide();
+        }
+
+        function readURL(input) {
+            console.log('Działa');
+            console.log(input);
+            if (input.files[0].size > maxInputSize || !(validFileType(input.files[0]))) {
+                console.log('Działa');
+                window.alert(inputInvalid);
+                return false;
+            }
+            if (input.files && input.files[0]) {
+                console.log('Działa');
+                $("#photoDialogContent").show();
+                $("#target").css("display", "block");
+                $("#preview").css("display", "block");
+                fileName = input.files[0].name;
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    clearSourceAndPreview();
+                    $('#target').attr('src', e.target.result);
+                    $('#target').Jcrop({
+                        onChange: updatePreview,
+                        onSelect: updatePreview,
+                        boxWidth: 600,
+                        aspectRatio: 1 / 1,
+                        bgOpacity: .4,
+                        bgFade: true,
+                        setSelect: [0, 0, 400, 400]
+                    });
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function updatePreview(c) {
+            if (parseInt(c.w) > 0) {
+                var imageObj = $("#target")[0];
+                canvas = $("#preview")[0];
+                var context = canvas.getContext("2d");
+                context.drawImage(imageObj, c.x, c.y, c.w, c.h, 0, 0, canvas.width, canvas.height);
+            }
+            $("#newPhotoSave").show();
+        };
+        function onSaveResult(result, event) {
+            fetchDoctorImage();
+            rerenderDoctorImage();
+            canvas = $("#preview")[0];
+            return false;
+        }
+        function saveImage() {
+            var parent = '{!doctor.id}';
+            var p1 = canvas.toDataURL("image/png").match(/data:(.+);base64,(.+)/);
+            {!$RemoteAction.HM_AddAvatarPictureController.saveImage}(fileName, p1[1], p1[2], parent, onSaveResult);
+            return false;
+        }
+
+        function validFileType(file) {
+            var fileTypes = [
+                'image/jpeg',
+                'image/jpg',
+                'image/png'
+            ];
+            for (var i = 0; i < fileTypes.length; i++) {
+                if (file.type === fileTypes[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function deleteDoctorImages() {
+            removeDoctorImage();
+            rerenderDoctorImage();
+        }
+        function showDialog(dialogId) {
+            $(dialogId).dialog('open');
+            $(dialogId).dialog('option', 'position', 'center');
+
+        }
+        function closeDialog(dialogId) {
+            $(dialogId).dialog('close');
+        }
+
+
+
+
+        </script>
+    </apex:outputPanel>
+</apex:page>

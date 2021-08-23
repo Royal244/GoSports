@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="TA_EventSelectedRow">
+    <aura:attribute type="String" name="RecordId"/>
+</aura:event>
